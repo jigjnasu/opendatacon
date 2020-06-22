@@ -23,10 +23,10 @@
  *  Created on: 05/06/2019
  *      Author: Neil Stephens <dearknarl@gmail.com>
  */
+#include "../opendatacon/DataConnector.h"
+#include "TestPorts.h"
 #include <atomic>
 #include <catch.hpp>
-#include "TestPorts.h"
-#include "../opendatacon/DataConnector.h"
 
 using namespace odc;
 
@@ -64,7 +64,7 @@ TEST_CASE(SUITE("PayloadTransport"))
 	//send them over a DataConnector
 	//check they arrived intact
 
-	auto ios = std::make_shared<odc::asio_service>();
+	auto ios = odc::asio_service::Get();
 	auto work = ios->make_work();
 
 	PublicPublishPort Source("Source","",Json::Value::nullSingleton());
@@ -76,11 +76,8 @@ TEST_CASE(SUITE("PayloadTransport"))
 	ConnConf["Connections"][0]["Port2"] = "Sink";
 	DataConnector Conn("Conn","",ConnConf);
 
-	Source.SetIOS(ios);
-	Sink.SetIOS(ios);
 	Source.Enable();
 	Sink.Enable();
-	Conn.SetIOS(ios);
 	Conn.Enable();
 
 	std::atomic<uint16_t> cb_count(0);
@@ -103,7 +100,7 @@ TEST_CASE(SUITE("PayloadTransport"))
 		                      std::to_string(time);
 		events.back()->SetPayload<EventType::OctetString>(std::move(payload));
 	}
-	for(auto e : events)
+	for(const auto& e : events)
 	{
 		Source.PublicPublishEvent(e,StatusCallback);
 	}
