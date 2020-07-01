@@ -27,15 +27,18 @@ function get_node(data) {
         if (Array.isArray(data) == true) {
             for (var i = 0; i < data.length; ++i) {
                 var count = 0;
-                for (var key of Object.keys(data[i])) {
-                    if (typeof data[i][key] == 'object') {
-                        var sub_node = get_node(data[i][key]);
-                        node.push(build_node(key, null, count, sub_node));
-                    } else {
-                        node.push(build_node(key, data[i][key], count, null));
+                if (data[i]) {
+                    for (var key of Object.keys(data[i])) {
+                        if (key && data[i][key]) {
+                            if (typeof data[i][key] == 'object') {
+                                var sub_node = get_node(data[i][key]);
+                                node.push(build_node(key, null, count, sub_node));
+                            } else {
+                                node.push(build_node(key, data[i][key], count, null));
+                            }
+                        }
+                        ++count;
                     }
-
-                    ++count;
                 }
             }
         } else {
