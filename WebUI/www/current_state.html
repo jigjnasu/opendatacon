@@ -59,6 +59,9 @@
       </div>
     </div>
 
+    <div id='graph'>
+    </div>
+
     <script>
       var gtarget = null;
       var gtype = null;
@@ -83,16 +86,10 @@
                       indexes.push(key);
                       var ts = [];
                       ts.push(now());
-                      gtimestamps[ganalog].push({
-                          key: key,
-                          value: ts
-                      });
+                      gtimestamps[ganalog][key] = ts;
                       var val = [];
                       val.push(value);
-                      gpayloads[ganalog].push({
-                          key: key,
-                          value: val
-                      });
+                      gpayloads[ganalog][key] = val;
                   }
                   gindexes[ganalog] = indexes;
 
@@ -102,16 +99,10 @@
                       indexes.push(key);
                       var ts = [];
                       ts.push(now());
-                      gtimestamps[gbinary].push({
-                          key: key,
-                          value: ts
-                      });
+                      gtimestamps[gbinary][key] = ts;
                       var val = [];
                       val.push(value);
-                      gpayloads[gbinary].push({
-                          key: key,
-                          value: val
-                      });
+                      gpayloads[gbinary][key] = val;
                   }
                   gindexes[gbinary] = indexes;
               });
@@ -147,6 +138,18 @@
               });
           var arr = gpayloads[gtype][gindex];
           document.getElementById('point_value').innerHTML = arr[arr.length - 1];
+
+          /*
+           plot the graph on the point type and index selected
+          */
+          const arr_ts = gtimestamps[gtype][gindex];
+          const arr_pa = gpayloads[gtype][gindex];
+          var data = [ {
+              x: arr_ts,
+              y: arr_pa,
+              type: 'scatter'
+          } ];
+          Plotly.newPlot('graph', data);
       }
 
       function set_point_type(type) {
