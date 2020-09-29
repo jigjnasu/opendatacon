@@ -27,7 +27,7 @@
             </select>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <div class="dropdown" id="dropdown_point_type">
               <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                 Point Type
@@ -40,8 +40,8 @@
             </div>
           </div>
 
-          <div class="col-sm-4">
-            <select class="selectpicker" multiple data-live-search="true" id="select_names" title="Names">
+          <div class="col-sm-2">
+            <select class="selectpicker" data-live-search="true" id="select_names" title="Names">
             </select>
           </div>
 
@@ -70,8 +70,15 @@
               });
       });
 
-      function populate_names(point_type) {
-          gpoint_type = point_type;
+      function set_point_type(point_type) {
+          const names = gnames[point_type];
+          var options = [];
+          for (const [key, value] of Object.entries(names)) {
+              const option = "<option>" + key + "</option>";
+              options.push(option);
+          }
+          $('#select_names').html(options);
+          $('#select_names').selectpicker('refresh');
       }
 
       $('#select_ports').on('changed.bs.select', function(e, index, new_value, old_value) {
@@ -98,8 +105,6 @@
                       });
               }
           });
-
-          console.log(gnames);
       });
     </script>
   </body>
