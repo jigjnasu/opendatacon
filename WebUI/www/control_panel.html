@@ -39,6 +39,8 @@
     <div class="alert alert-info clearfix">
       <a href="#" class="alert-link"></a>
       <button type="button" class="btn btn-primary float-right" onclick="go_to_tabular()">Tabular</button>
+      <button type="button" class="btn btn-warning float-right" onclick="visualization()">Visualization</button>
+      <button type="button" class="btn btn-info float-right" onclick="binary_controls()">Binary Controls</button>
     </div>
 
     <div class="container">
@@ -146,6 +148,14 @@
           $("#command_control_modal").on("hidden.bs.modal", function () {
               location.reload();
           });
+      }
+
+      function visualization() {
+          window.location.href="visualization.html";
+      }
+
+      function binary_controls() {
+          console.log("Binary controls TBD");
       }
 
       $('.list-group').on('click','> a', function() {
