@@ -17,6 +17,20 @@
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/node_modules/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
 
+    <style>
+      #drawing_container {
+          position: absolute;
+          left: 10px;
+          top: 100px
+      }
+      #drawing_board {
+          position: relative;
+          width: 1710px;
+          height: 640px;
+          background-color: #BDEDFF;
+      }
+    </style>
+
   </head>
 
   <body>
@@ -51,10 +65,16 @@
       </div>
     </div>
 
+    <div class="container" id = "drawing_container">
+      <canvas id="drawing_board" width="960" height="680"></canvas>
+    </div>
+
     <script>
       var gtype = "";
       var gport = "";
       var gnames = {"Analog" : {}, "Binary" : {}};
+      var gtimer_handle = null;
+
       $(document).ready(function() {
           const url = "/SimControl List";
           $.post(url, {})
@@ -82,9 +102,14 @@
           $("#select_name").selectpicker("refresh");
       }
 
-      function plot(data, ts) {
-          console.log(data);
-          console.log(ts.substr(14, 5));
+      function plot(index) {
+          console.log(index);
+          const url = "/DataPorts CurrentState";
+          $.post(url, {Target : gport})
+              .done(function (data) {
+                  console.log(data[gtype + "Payload"][index]);
+                  console.log(data[gtype + "Timestamp"][index].substr(14, 5));
+              });
       }
 
       $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
@@ -110,12 +135,8 @@
 
       $("#select_name").on('changed.bs.select', function (e, index, new_value, old_value) {
           const selected = $(e.currentTarget).val();
-          const url = "/DataPorts CurrentState";
-          $.post(url, {Target : gport})
-              .done(function (data) {
-                  const index = gnames[gtype][selected];
-                  plot(data[gtype + "Payload"][index], data[gtype + "Timestamp"][index]);
-              });
+          const ind = gnames[gtype][selected];
+          gtimer_handle = window.setInterval(function() { plot(ind); }, 2000);
       });
 
       </script>
