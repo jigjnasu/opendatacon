@@ -51,6 +51,10 @@
 
     <div id="drawing_board"> <!-- Plotly drawing board for plots -->
     </div>
+    <span class="badge badge-pill badge-primary float-xl-right">
+      <div id="current_data">
+      </div>
+    </span>
 
     <script>
       var gpayload = [];
@@ -95,6 +99,8 @@
                       gpayload.shift();
                       gtimestamp.shift();
                   }
+                  const v = data[gtype + "Timestamp"][index] + " : " + data[gtype + "Payload"][index];
+                  document.getElementById("current_data").innerHTML = v;
                   gpayload.push(data[gtype + "Payload"][index]);
                   gtimestamp.push(data[gtype + "Timestamp"][index].substr(14, 5));
               });
