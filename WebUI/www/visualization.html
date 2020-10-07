@@ -6,11 +6,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OpenDataCon</title>
 
-    <canvas id="timeSeriesChart" width="400" height="400"></canvas>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap_select/dist/css/bootstrap-select.css">
+
+	<script src="node_modules/charts/chart.js/node_modules/moment/min/moment.min.js"></script>
+	<script src="node_modules/charts/chart.js/dist/Chart.min.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/popper/dist/umd/popper.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/node_modules/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
+
   </head>
 
   <body>
-	<script src="node_modules/chart.js/node_modules/moment/min/moment.min.js"></script>
-	<script src="node_modules/chart.js/dist/Chart.min.js"></script>
+    <!-- html page starts from here -->
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col-sm-3">
+          <select class="selectpicker" data-live-search="true" id="select_ports" title="Ports">
+          </select>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="dropdown" id="dropdown_point_type">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+              Point Type
+            </button>
+
+            <div class="dropdown-menu">
+              <a class="dropdown-item" onclick="populate_names('Analog')">Analog</a>
+              <a class="dropdown-item" onclick="populate_names('Binary')">Binary</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <select class="selectpicker" data-live-search="true" id="select_name" title="Point Names">
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      var gnames = {"Analog" : {}, "Binary" : {}};
+      $(document).ready(function() {
+          const url = "/SimControl List";
+          $.post(url, {})
+              .done(function (data) {
+                  const ports = data["Items"];
+                  var options = [];
+                  ports.forEach(function(item) {
+                      const option = "<option>" + item + "</option>";
+                      options.push(option);
+                  });
+
+                  $("#select_ports").html(options);
+                  $("#select_ports").selectpicker("refresh");
+              });
+      });
+
+      function populate_names(type) {
+          var options = [];
+          for (const [key, value] of Object.entries(gnames[type])) {
+              const option = "<option>" + key + "</option>";
+              options.push(option);
+          }
+          $("#select_name").html(options);
+          $("#select_name").selectpicker("refresh");
+      }
+
+      $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
+          gnames = {"Analog" : {}, "Binary" : {}};
+          var selected = $(e.currentTarget).val();
+          const url = "DataPorts Configuration";
+          $.post(url, {Target : selected})
+              .done(function (data) {
+                  for (const [key, value] of Object.entries(data)) {
+                      const k = selected.substr(4, selected.length - 4);
+                      if (key.includes(k)) {
+                          const analogs = value["Analogs"];
+                          value["Analogs"].forEach(function (item) {
+                              gnames["Analog"][item.Name] = item.Index;
+                          });
+                          value["Binaries"].forEach(function (item) {
+                              gnames["Binary"][item.Name] = item.Index;
+                          });
+                      }
+                  }
+              });
+      });
+
+      $("#select_name").on('changed.bs.select', function (e, index, new_value, old_value) {
+          const selected = $(e.currentTarget).val();
+          console.log(selected);
+      });
+
+      </script>
   </body>
 </html>
