@@ -52,6 +52,8 @@
     </div>
 
     <script>
+      var gtype = "";
+      var gport = "";
       var gnames = {"Analog" : {}, "Binary" : {}};
       $(document).ready(function() {
           const url = "/SimControl List";
@@ -70,8 +72,9 @@
       });
 
       function populate_names(type) {
+          gtype = type;
           var options = [];
-          for (const [key, value] of Object.entries(gnames[type])) {
+          for (const [key, value] of Object.entries(gnames[gtype])) {
               const option = "<option>" + key + "</option>";
               options.push(option);
           }
@@ -79,14 +82,19 @@
           $("#select_name").selectpicker("refresh");
       }
 
+      function plot(data, ts) {
+          console.log(data);
+          console.log(ts.substr(14, 5));
+      }
+
       $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
           gnames = {"Analog" : {}, "Binary" : {}};
-          var selected = $(e.currentTarget).val();
+          gport = $(e.currentTarget).val();
           const url = "DataPorts Configuration";
-          $.post(url, {Target : selected})
+          $.post(url, {Target : gport})
               .done(function (data) {
                   for (const [key, value] of Object.entries(data)) {
-                      const k = selected.substr(4, selected.length - 4);
+                      const k = gport.substr(4, gport.length - 4);
                       if (key.includes(k)) {
                           const analogs = value["Analogs"];
                           value["Analogs"].forEach(function (item) {
@@ -102,7 +110,12 @@
 
       $("#select_name").on('changed.bs.select', function (e, index, new_value, old_value) {
           const selected = $(e.currentTarget).val();
-          console.log(selected);
+          const url = "/DataPorts CurrentState";
+          $.post(url, {Target : gport})
+              .done(function (data) {
+                  const index = gnames[gtype][selected];
+                  plot(data[gtype + "Payload"][index], data[gtype + "Timestamp"][index]);
+              });
       });
 
       </script>
