@@ -27,7 +27,7 @@
           position: relative;
           width: 1710px;
           height: 640px;
-          background-color: #BDEDFF;
+          background-color: #F0F8FF;
       }
     </style>
 
@@ -70,6 +70,8 @@
     </div>
 
     <script>
+      var gpayload = [];
+      var gtimestamp = [];
       var gtype = "";
       var gport = "";
       var gnames = {"Analog" : {}, "Binary" : {}};
@@ -103,13 +105,19 @@
       }
 
       function plot(index) {
-          console.log(index);
+          const ctx = document.getElementById('drawing_board').getContext('2d');
           const url = "/DataPorts CurrentState";
           $.post(url, {Target : gport})
               .done(function (data) {
-                  console.log(data[gtype + "Payload"][index]);
-                  console.log(data[gtype + "Timestamp"][index].substr(14, 5));
+                  if (gpayload.length >= 50) {
+                      gpayload.shift();
+                      gtimestamp.shift();
+                  }
+                  gpayload.push(data[gtype + "Payload"][index]);
+                  gtimestamp.push(data[gtype + "Timestamp"][index].substr(14, 5));
               });
+
+          console.log(gpayload.length + " -- " + gtimestamp.length);
       }
 
       $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
