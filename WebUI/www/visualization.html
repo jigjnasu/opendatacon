@@ -75,9 +75,8 @@
           const url = "/SimControl List";
           $.post(url, {})
               .done(function (data) {
-                  const ports = data["Items"];
                   var options = [];
-                  ports.forEach(function(item) {
+                  data['Items'].forEach(function(item) {
                       const option = "<option>" + item + "</option>";
                       options.push(option);
                   });
@@ -96,7 +95,7 @@
       }
 
       function go_to_binary_controls() {
-          console.log('Binary Controls TBD');
+          window.location.href="binary_controls.html";
       }
 
       function populate_names(type) {
@@ -139,7 +138,7 @@
       $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
           gnames = {"Analog" : {}, "Binary" : {}};
           gport = $(e.currentTarget).val();
-          const url = "DataPorts Configuration";
+          const url = "/DataPorts Configuration";
           $.post(url, {Target : gport})
               .done(function (data) {
                   for (const [key, value] of Object.entries(data)) {

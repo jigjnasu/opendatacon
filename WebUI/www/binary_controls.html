@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenDataCon</title>
+
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap_select/dist/css/bootstrap-select.css">
+
+    <script src='node_modules/plot/plotly-latest.min.js'></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/popper/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="node_modules/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
+  </head>
+
+  <body>
+    <!-- html page starts from here -->
+
+    <div class="alert alert-info clearfix">
+      <a href="#" class="alert-link"></a>
+      <button type="button" class="btn btn-primary float-right" onclick="go_to_tabular()">Tabular</button>
+      <button type="button" class="btn btn-warning float-right" onclick="go_to_control_panel()">Control Panel</button>
+      <button type="button" class="btn btn-info float-right" onclick="go_to_visualization()">Visualization</button>
+    </div>
+
+    <div class="container">
+      <div class="row">
+
+        <select class="selectpicker" data-live-search="true" id="select_ports" title="Ports">
+        </select>
+        &nbsp;&nbsp;
+
+        <div class="dropdown" id="dropdown_control_type">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            Binary Control Type
+          </button>
+
+          <div class="dropdown-menu">
+            <a class="dropdown-item" onclick="populate_controls('Feedback')">Feedback</a>
+            <a class="dropdown-item" onclick="populate_controls('Position')">Position</a>
+          </div>
+        </div>
+        &nbsp;&nbsp;
+
+        <select class="selectpicker" data-live-search="true" id="select_action" title="Control Action">
+        </select>
+        &nbsp;&nbsp;
+
+        <select class="selectpicker" data-live-search="true" id="select_name" title="Point Names">
+        </select>
+
+      </div>
+    </div>
+
+    <div id="drawing_board"> <!-- Plotly drawing board for plots -->
+    </div>
+    <span class="badge badge-pill badge-primary float-xl-right">
+      <div id="current_data">
+      </div>
+    </span>
+
+    <script>
+      var gport = null;
+      gactions = {'Feedback' : ['PULSE_ON', 'PULSE_OFF', 'LATCH_ON', 'LATCH_OFF', 'CLOSE_PULSE_ON', 'TRIP_PULSE_ON'],
+                  'Position' : ['RAISE', 'LOWER']}
+
+      $(document).ready(function () {
+          const url = "/SimControl List";
+          $.post(url, {})
+              .done(function (data) {
+                  var options = [];
+                  data['Items'].forEach(function (item) {
+                      const option = '<option>' + item + '</option>';
+                      options.push(option);
+                  });
+
+                  $('#select_ports').html(options);
+                  $('#select_ports').selectpicker('refresh');
+              })
+      });
+
+      function go_to_tabular() {
+          window.location.href="index.html";
+      }
+
+      function go_to_control_panel() {
+          window.location.href="control_panel.html";
+      }
+
+      function go_to_visualization() {
+          window.location.href="visualization.html";
+      }
+
+      function populate_controls(control) {
+          var options = [];
+          gactions[control].forEach(function (item) {
+              const option = '<option>' + item + '</option>';
+              options.push(option);
+          });
+
+          $('#select_action').html(options);
+          $('#select_action').selectpicker('refresh');
+
+          const url = "/DataPorts Configuration";
+          $.post(url, {Target : gport})
+              .done(function (data) {
+                  for (const [key, value] of Object.entries(data)) {
+                      const k = gport.substr(4, gport.length - 4);
+                      if (k.includes(k)) {
+                          if (value['BinaryControls']) {
+                              value['BinaryControls'].forEach(function (item) {
+                                  //console.log(item);
+                              });
+                          }
+                      }
+                  }
+              });
+      }
+
+      $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
+          gport = $(e.currentTarget).val();
+      });
+
+    </script>
+  </body>
+</html>
