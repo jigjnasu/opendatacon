@@ -20,6 +20,13 @@
   <body>
     <!-- html page starts from here -->
 
+    <div class="alert alert-info clearfix">
+      <a href="#" class="alert-link"></a>
+      <button type="button" class="btn btn-primary float-right" onclick="go_to_tabular()">Tabular</button>
+      <button type="button" class="btn btn-warning float-right" onclick="go_to_control_panel()">Control Panel</button>
+      <button type="button" class="btn btn-info float-right" onclick="go_to_binary_controls()">Binary Controls</button>
+    </div>
+
     <div class="container">
       <div class="row">
 
@@ -79,6 +86,18 @@
                   $("#select_ports").selectpicker("refresh");
               });
       });
+
+      function go_to_tabular() {
+          window.location.href="index.html";
+      }
+
+      function go_to_control_panel() {
+          window.location.href="control_panel.html";
+      }
+
+      function go_to_binary_controls() {
+          console.log('Binary Controls TBD');
+      }
 
       function populate_names(type) {
           gtype = type;

@@ -39,8 +39,8 @@
     <div class="alert alert-info clearfix">
       <a href="#" class="alert-link"></a>
       <button type="button" class="btn btn-primary float-right" onclick="go_to_tabular()">Tabular</button>
-      <button type="button" class="btn btn-warning float-right" onclick="visualization()">Visualization</button>
-      <button type="button" class="btn btn-info float-right" onclick="binary_controls()">Binary Controls</button>
+      <button type="button" class="btn btn-warning float-right" onclick="go_to_visualization()">Visualization</button>
+      <button type="button" class="btn btn-info float-right" onclick="go_to_binary_controls()">Binary Controls</button>
     </div>
 
     <div class="container">
@@ -150,11 +150,11 @@
           });
       }
 
-      function visualization() {
+      function go_to_visualization() {
           window.location.href="visualization.html";
       }
 
-      function binary_controls() {
+      function go_to_binary_controls() {
           console.log("Binary controls TBD");
       }
 

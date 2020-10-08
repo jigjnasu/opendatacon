@@ -37,6 +37,8 @@
     <div class="alert alert-info clearfix">
       <a href="#" class="alert-link"></a>
       <button type="button" class="btn btn-primary float-right" onclick="go_to_control_panel()">Control Panel</button>
+      <button type="button" class="btn btn-warning float-right" onclick="go_to_visualization()">Visualization</button>
+      <button type="button" class="btn btn-info float-right" onclick="go_to_binary_controls()">Binary Controls</button>
     </div>
 
     <!-- Data ports table -->
@@ -66,6 +68,14 @@
       /* function which will take user to the control panel mode */
       function go_to_control_panel() {
           window.location.href="control_panel.html";
+      }
+
+      function go_to_visualization() {
+          window.location.href="visualization.html";
+      }
+
+      function go_to_binary_controls() {
+          console.log("Binary controls TBD");
       }
 
       /* post a query to the server with target and get the data ports */
