@@ -34,6 +34,7 @@
 
   <body>
     <!-- html section -->
+    <!-- common html loaded -->
     <div id="common_content"></div>
 
     <div class="alert alert-info clearfix">
@@ -155,7 +156,8 @@
       }
 
       function go_to_binary_controls() {
-          window.location.href="binary_controls.html";
+          document.getElementById('binary_control_modal_title').innerHTML = 'Binary Controls';
+          $('#binary_control_modal').modal('show');
       }
 
       $('.list-group').on('click','> a', function() {
