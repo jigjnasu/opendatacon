@@ -15,16 +15,25 @@
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="node_modules/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
+
+    <script>
+      $(function() {
+          $("#common_content").load("common.html");
+      });
+    </script>
   </head>
 
   <body>
     <!-- html page starts from here -->
+    <!-- html common loaded -->
+    <div id="common_content"></div>
 
     <div class="alert alert-info clearfix">
       <a href="#" class="alert-link"></a>
       <button type="button" class="btn btn-primary float-right" onclick="go_to_tabular()">Tabular</button>
       <button type="button" class="btn btn-warning float-right" onclick="go_to_control_panel()">Control Panel</button>
       <button type="button" class="btn btn-info float-right" onclick="go_to_visualization()">Visualization</button>
+      <button type="button" class="btn btn-success float-right" onclick="go_to_binary_controls()">Binary Controls</button>
     </div>
 
     <div class="container">
@@ -32,38 +41,20 @@
 
         <select class="selectpicker" data-live-search="true" id="select_ports" title="Ports">
         </select>
-        &nbsp;
+        &nbsp;&nbsp;
 
-        <div class="dropdown" id="dropdown_control_type">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-            Control Type
-          </button>
-
-          <div class="dropdown-menu">
-            <a class="dropdown-item" onclick="populate_controls('Feedback')">Feedback</a>
-            <a class="dropdown-item" onclick="populate_controls('Position')">Position</a>
-          </div>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-primary" onclick="set_action()">On</button>
+          <button type="button" class="btn btn-secondary" onclick="set_action()">Off</button>
         </div>
-        &nbsp;
-
-        <div class="dropdown" id="dropdown_control_action">
-          <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-            Control Action
-          </button>
-
-          <div class="dropdown-menu">
-            <a class="dropdown-item" onclick="populate_controls('Off')">Off</a>
-            <a class="dropdown-item" onclick="populate_controls('On')">On</a>
-          </div>
-        </div>
-        &nbsp;
+        &nbsp;&nbsp;
 
         <select class="selectpicker" data-live-search="true" id="select_name" title="Point Names">
         </select>
-        &nbsp;
+        &nbsp;&nbsp;
 
         <button type="button" class="btn btn-primary" onclick="send_event()">Send Event</button>
-        &nbsp;
+        &nbsp;&nbsp;
         <button type="button" class="btn btn-warning" onclick="configuration()">Confuguration</button>
 
       </div>
@@ -107,38 +98,44 @@
           window.location.href="visualization.html";
       }
 
-      function populate_controls(control) {
+      function go_to_binary_controls() {
+          document.getElementById('binary_control_modal_title').innerHTML = 'Binary Controls';
+          $('#binary_control_modal').modal('show');
+      }
+
+      $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
           gnames = {};
+          gport = $(e.currentTarget).val();
           const url = "/DataPorts Configuration";
           $.post(url, {Target : gport})
               .done(function (data) {
                   for (const [key, value] of Object.entries(data)) {
                       const k = gport.substr(4, gport.length - 4);
-                      if (k.includes(k)) {
+                      if (key.includes(k)) {
                           if (value['BinaryControls']) {
                               value['BinaryControls'].forEach(function (item) {
-                                  console.log(item);
-                                  if (control == 'Feedback') {
-                                      if (item['FeedbackBinaries']) {
-                                          //item['FeedbackBinaries'].forEach(function (sub_item) {
-                                          //console.log(sub_item);
-                                      //});
-                                      }
-                                  }
-
-                                  if (control == 'Position') {
-                                      if (item['FeedbackPosition']) {
-                                      }
+                                  if (item['FeedbackBinaries']) {
+                                      item['FeedbackBinaries'].forEach(function (feedback) {
+                                          if (feedback['FeedbackMode']) {
+                                              if (feedback['FeedbackMode'].toLowerCase() == 'latch') {
+                                                  node = {'Index' : feedback['Index'],
+                                                          'OffValue' : null,
+                                                          'OnValue' : null};
+                                                  if (feedback['OffValue'])
+                                                      node['OffValue'] = feedback['OffValue'];
+                                                  if (feedback['OnValue'])
+                                                      node['OnValue'] = feedback['OnValue'];
+                                                  gnames[item['Name']].push(Node);
+                                              }
+                                          }
+                                      });
                                   }
                               });
                           }
                       }
                   }
               });
-      }
-
-      $("#select_ports").on('changed.bs.select', function (e, index, new_value, old_value) {
-          gport = $(e.currentTarget).val();
+          console.log(gnames);
       });
 
     </script>
