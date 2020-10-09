@@ -140,8 +140,50 @@
   </div>
 </div>
 
+<!-- Binary Control Modal -->
+<div class="modal fade" id="binary_control_modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">
+            <div id="binary_control_modal_title">
+            </div>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary" onclick="go_to_latch()">LATCH</button>
+            <button type="button" class="btn btn-primary" onclick="go_to_pulse()">PULSE</button>
+            <button type="button" class="btn btn-primary" onclick="go_to_position()">POSITION</button>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
 <script>
   function set_log_level(level) {
       window.localStorage.setItem("log_level", level);
+  }
+
+  function go_to_latch() {
+      window.location.href='latch.html';
+  }
+
+  function go_to_pulse() {
+      window.location.href='pulse.html';
+  }
+
+  function go_to_position() {
+      window.location.href='position.html';
   }
 </script>

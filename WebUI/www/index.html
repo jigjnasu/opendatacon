@@ -75,7 +75,8 @@
       }
 
       function go_to_binary_controls() {
-          window.location.href="binary_controls.html";
+          document.getElementById('binary_control_modal_title').innerHTML = 'Binary Controls';
+          $('#binary_control_modal').modal('show');
       }
 
       /* post a query to the server with target and get the data ports */

@@ -32,11 +32,11 @@
 
         <select class="selectpicker" data-live-search="true" id="select_ports" title="Ports">
         </select>
-        &nbsp;&nbsp;
+        &nbsp;
 
         <div class="dropdown" id="dropdown_control_type">
           <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-            Binary Control Type
+            Control Type
           </button>
 
           <div class="dropdown-menu">
@@ -44,14 +44,27 @@
             <a class="dropdown-item" onclick="populate_controls('Position')">Position</a>
           </div>
         </div>
-        &nbsp;&nbsp;
+        &nbsp;
 
-        <select class="selectpicker" data-live-search="true" id="select_action" title="Control Action">
-        </select>
-        &nbsp;&nbsp;
+        <div class="dropdown" id="dropdown_control_action">
+          <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+            Control Action
+          </button>
+
+          <div class="dropdown-menu">
+            <a class="dropdown-item" onclick="populate_controls('Off')">Off</a>
+            <a class="dropdown-item" onclick="populate_controls('On')">On</a>
+          </div>
+        </div>
+        &nbsp;
 
         <select class="selectpicker" data-live-search="true" id="select_name" title="Point Names">
         </select>
+        &nbsp;
+
+        <button type="button" class="btn btn-primary" onclick="send_event()">Send Event</button>
+        &nbsp;
+        <button type="button" class="btn btn-warning" onclick="configuration()">Confuguration</button>
 
       </div>
     </div>
@@ -65,8 +78,7 @@
 
     <script>
       var gport = null;
-      gactions = {'Feedback' : ['PULSE_ON', 'PULSE_OFF', 'LATCH_ON', 'LATCH_OFF', 'CLOSE_PULSE_ON', 'TRIP_PULSE_ON'],
-                  'Position' : ['RAISE', 'LOWER']}
+      var gnames = {};
 
       $(document).ready(function () {
           const url = "/SimControl List";
@@ -96,15 +108,7 @@
       }
 
       function populate_controls(control) {
-          var options = [];
-          gactions[control].forEach(function (item) {
-              const option = '<option>' + item + '</option>';
-              options.push(option);
-          });
-
-          $('#select_action').html(options);
-          $('#select_action').selectpicker('refresh');
-
+          gnames = {};
           const url = "/DataPorts Configuration";
           $.post(url, {Target : gport})
               .done(function (data) {
@@ -113,7 +117,19 @@
                       if (k.includes(k)) {
                           if (value['BinaryControls']) {
                               value['BinaryControls'].forEach(function (item) {
-                                  //console.log(item);
+                                  console.log(item);
+                                  if (control == 'Feedback') {
+                                      if (item['FeedbackBinaries']) {
+                                          //item['FeedbackBinaries'].forEach(function (sub_item) {
+                                          //console.log(sub_item);
+                                      //});
+                                      }
+                                  }
+
+                                  if (control == 'Position') {
+                                      if (item['FeedbackPosition']) {
+                                      }
+                                  }
                               });
                           }
                       }

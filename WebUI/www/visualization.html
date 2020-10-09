@@ -15,10 +15,18 @@
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="node_modules/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
+
+    <script>
+      $(function() {
+          $("#common_content").load("common.html");
+      });
+    </script>
   </head>
 
   <body>
     <!-- html page starts from here -->
+    <!-- common html included -->
+    <div id="common_content"></div>
 
     <div class="alert alert-info clearfix">
       <a href="#" class="alert-link"></a>
@@ -95,7 +103,8 @@
       }
 
       function go_to_binary_controls() {
-          window.location.href="binary_controls.html";
+          document.getElementById('binary_control_modal_title').innerHTML = 'Binary Controls';
+          $('#binary_control_modal').modal('show');
       }
 
       function populate_names(type) {
