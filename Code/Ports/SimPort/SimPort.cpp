@@ -92,9 +92,9 @@ void SimPort::Enable()
 		{
 			if(!enabled)
 			{
-			      PortUp();
-			      enabled = true;
-			      if(!httpServerToken.ServerID.empty())
+				PortUp();
+				enabled = true;
+				if(!httpServerToken.ServerID.empty())
 					HttpServerManager::StartConnection(httpServerToken);
 			}
 		});
@@ -106,9 +106,9 @@ void SimPort::Disable()
 		{
 			if(enabled)
 			{
-			      enabled = false;
-			      PortDown();
-			      if(!httpServerToken.ServerID.empty())
+				enabled = false;
+				PortDown();
+				if(!httpServerToken.ServerID.empty())
 					HttpServerManager::StopConnection(httpServerToken);
 			}
 		});
@@ -284,9 +284,9 @@ bool SimPort::UISetUpdateInterval(EventType type, const std::string& index, cons
 					{
 						if(enabled && !err_code)
 						{
-						      if (type == EventType::Binary)
+							if (type == EventType::Binary)
 								StartBinaryEvents(index);
-						      if (type == EventType::Analog)
+							if (type == EventType::Analog)
 								StartAnalogEvents(index);
 						}
 					});
@@ -589,32 +589,32 @@ void SimPort::Build()
 
 				if (error.length() == 0)
 				{
-				      if (to_lower(type) == "binary")
-				      {
-				            std::vector<std::size_t> indexes = IndexesFromString(index, EventType::Binary);
-				            result = pSimConf->CurrentState(EventType::Binary, indexes);
+					if (to_lower(type) == "binary")
+					{
+						std::vector<std::size_t> indexes = IndexesFromString(index, EventType::Binary);
+						result = pSimConf->CurrentState(EventType::Binary, indexes);
 					}
-				      if (to_lower(type) == "analog")
-				      {
-				            std::vector<std::size_t> indexes = IndexesFromString(index, EventType::Analog);
-				            result = pSimConf->CurrentState(EventType::Analog, indexes);
+					if (to_lower(type) == "analog")
+					{
+						std::vector<std::size_t> indexes = IndexesFromString(index, EventType::Analog);
+						result = pSimConf->CurrentState(EventType::Analog, indexes);
 					}
-				      if (to_lower(type) == "control")
-				      {
-				            std::vector<std::size_t> indexes = IndexesFromString(index, EventType::ControlRelayOutputBlock);
-				            result = pSimConf->CurrentState(EventType::ControlRelayOutputBlock, indexes);
+					if (to_lower(type) == "control")
+					{
+						std::vector<std::size_t> indexes = IndexesFromString(index, EventType::ControlRelayOutputBlock);
+						result = pSimConf->CurrentState(EventType::ControlRelayOutputBlock, indexes);
 					}
 				}
 				if (result.length() != 0)
 				{
-				      rep.status = http::reply::ok;
-				      rep.content.append(result);
+					rep.status = http::reply::ok;
+					rep.content.append(result);
 				}
 				else
 				{
-				      rep.status = http::reply::not_found;
-				      contenttype = "text/html";
-				      rep.content.append("You have reached the SimPort Instance with GET on " + Name + " Invalid Request " + type + ", " + index + " - " + error);
+					rep.status = http::reply::not_found;
+					contenttype = "text/html";
+					rep.content.append("You have reached the SimPort Instance with GET on " + Name + " Invalid Request " + type + ", " + index + " - " + error);
 				}
 				rep.headers.resize(2);
 				rep.headers[0].name = "Content-Length";
@@ -655,15 +655,15 @@ void SimPort::Build()
 
 				if (parameters.count("force") != 0)
 				{
-				      if (((to_lower(parameters.at("force")) == "true") || (parameters.at("force") == "1")))
-				      {
-				            SetForcedState(index, type, true);
-				            rep.content.append("Set Period Command Accepted\n");
+					if (((to_lower(parameters.at("force")) == "true") || (parameters.at("force") == "1")))
+					{
+						SetForcedState(index, type, true);
+						rep.content.append("Set Period Command Accepted\n");
 					}
-				      if (((to_lower(parameters.at("force")) == "false") || (parameters.at("force") == "0")))
-				      {
-				            SetForcedState(index, type, false);
-				            rep.content.append("Set Period Command Accepted\n");
+					if (((to_lower(parameters.at("force")) == "false") || (parameters.at("force") == "0")))
+					{
+						SetForcedState(index, type, false);
+						rep.content.append("Set Period Command Accepted\n");
 					}
 				}
 
@@ -674,25 +674,25 @@ void SimPort::Build()
 
 				if ((error.length() == 0) && (value.length() != 0) && UILoad(type, index, value, quality, timestamp, false)) // Forced set above
 				{
-				      rep.status = http::reply::ok;
-				      rep.content.append("Set Value Command Accepted\n");
+					rep.status = http::reply::ok;
+					rep.content.append("Set Value Command Accepted\n");
 				}
 
 				if ((error.length() == 0) && (period.length() != 0) && UISetUpdateInterval(type, index, period))
 				{
-				      rep.status = http::reply::ok;
-				      rep.content.append("Set Period Command Accepted\n");
+					rep.status = http::reply::ok;
+					rep.content.append("Set Period Command Accepted\n");
 				}
 
 				if ((value.length() == 0) && (period.length() != 0))
 				{
-				      error += " Missing a value or period parameter. Must have at least one.";
+					error += " Missing a value or period parameter. Must have at least one.";
 				}
 
 				if (error.length() != 0)
 				{
-				      rep.status = http::reply::not_found;
-				      rep.content.append("You have reached the SimPort Instance with POST on " + Name + " POST Command Failed - " + error);
+					rep.status = http::reply::not_found;
+					rep.content.append("You have reached the SimPort Instance with POST on " + Name + " POST Command Failed - " + error);
 				}
 				rep.headers.resize(2);
 				rep.headers[0].name = "Content-Length";
@@ -728,30 +728,33 @@ void SimPort::Event(std::shared_ptr<const EventInfo> event, const std::string& S
 	if (event->GetEventType() == EventType::ControlRelayOutputBlock)
 	{
 		index = event->GetIndex();
-		auto& command = event->GetPayload<EventType::ControlRelayOutputBlock>();
-		auto feedbacks = pSimConf->BinaryFeedbacks(index);
+		if (pSimConf->IsIndex(EventType::ControlRelayOutputBlock, index))
+		{
+			auto& command = event->GetPayload<EventType::ControlRelayOutputBlock>();
+			auto feedbacks = pSimConf->BinaryFeedbacks(index);
 
-		auto payload = command;
-		std::shared_ptr<odc::EventInfo> control_event = std::make_shared<odc::EventInfo>(odc::EventType::ControlRelayOutputBlock, index, event->GetSourcePort(), event->GetQuality());
-		control_event->SetPayload<odc::EventType::ControlRelayOutputBlock>(std::move(payload));
-		control_event->SetTimestamp(event->GetTimestamp());
-		if (!feedbacks.empty())
-		{
-			status = HandleBinaryFeedback(feedbacks, index, command, message);
-			pSimConf->SetCurrentBinaryControl(control_event, index);
-		}
-		else
-		{
-			std::shared_ptr<BinaryPosition> bp = pSimConf->GetBinaryPosition(index);
-			if (bp != nullptr)
+			auto payload = command;
+			std::shared_ptr<odc::EventInfo> control_event = std::make_shared<odc::EventInfo>(odc::EventType::ControlRelayOutputBlock, index, event->GetSourcePort(), event->GetQuality());
+			control_event->SetPayload<odc::EventType::ControlRelayOutputBlock>(std::move(payload));
+			control_event->SetTimestamp(event->GetTimestamp());
+			if (!feedbacks.empty())
 			{
-				status = HandleBinaryPosition(bp, event->GetPayload<EventType::ControlRelayOutputBlock>(), message);
+				status = HandleBinaryFeedback(feedbacks, index, command, message);
 				pSimConf->SetCurrentBinaryControl(control_event, index);
 			}
 			else
 			{
-				message = "No feedback positions point configured";
-				status = CommandStatus::NOT_SUPPORTED;
+				std::shared_ptr<BinaryPosition> bp = pSimConf->GetBinaryPosition(index);
+				if (bp != nullptr)
+				{
+					status = HandleBinaryPosition(bp, event->GetPayload<EventType::ControlRelayOutputBlock>(), message);
+					pSimConf->SetCurrentBinaryControl(control_event, index);
+				}
+				else
+				{
+					message = "No feedback positions point configured";
+					status = CommandStatus::NOT_SUPPORTED;
+				}
 			}
 		}
 	}
@@ -792,9 +795,9 @@ CommandStatus SimPort::HandleBinaryFeedback(const std::vector<std::shared_ptr<Bi
 							//FIXME: check err_code?
 							if(!pSimConf->ForcedState(odc::EventType::Binary, fb->off_value->GetIndex()))
 							{
-							      auto event = std::make_shared<odc::EventInfo>(*fb->off_value);
-							      event->SetTimestamp();
-							      PostPublishEvent(event);
+								auto event = std::make_shared<odc::EventInfo>(*fb->off_value);
+								event->SetTimestamp();
+								PostPublishEvent(event);
 							}
 						});
 					//TODO: (maybe) implement multiple pulses - command has count and offTimeMS
